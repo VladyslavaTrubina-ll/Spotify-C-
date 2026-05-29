@@ -1,202 +1,193 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
+using System.Linq;
 using System.Runtime.Versioning;
+using System.Windows.Forms;
 
 namespace Spotify.WinForms.Views
 {
     /// <summary>
-    /// Форма для обчислення функції w = tg(x).
-    /// Демонструє програмне розташування елементів управління при роботі програми.
-    /// Це відповідає вимогам практичної роботи про динамічне створення об'єктів.
+    /// Форма для виконання завдання №14 з обчисленням y(x) за двома формулами.
     /// </summary>
     [SupportedOSPlatform("windows")]
-    public partial class FormCalcularFuncion : Form
+    public class FormCalcularFuncion : Form
     {
-        private Label lblA, lblB, lblC;
-        private TextBox txtA, txtB, txtC;
-        private Button btnCalcular;
-        private PictureBox pictureBox;
-        private ListBox listBox;
-        private ComboBox comboBoxFuncion;
+        private Label lblInfo;
+        private Label lblXmin;
+        private Label lblXmax;
+        private Label lblDx;
+        private Label lblA;
+        private TextBox txtXmin;
+        private TextBox txtXmax;
+        private TextBox txtDx;
+        private TextBox txtA;
+        private Button btnRun;
+        private Button btnFormulas;
+        private PictureBox picStudent;
+        private Label lblStudent;
 
         public FormCalcularFuncion()
         {
-            InitializeComponent();
-            this.Text = "Обчислення функції w = tg(x)";
-            this.Size = new Size(600, 700);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.FromArgb(30, 30, 30);
+            Text = "№14 — Обчислення y(x)";
+            StartPosition = FormStartPosition.CenterScreen;
+            Size = new Size(780, 460);
+            BackColor = Color.WhiteSmoke;
 
-            CriarElementosProgramaticamente();
+            InitializeUi();
         }
 
-        private void CriarElementosProgramaticamente()
+        private void InitializeUi()
         {
-            // Завантажити фотографію (за наявності)
-            pictureBox = new PictureBox();
-            pictureBox.Location = new Point(150, 10);
-            pictureBox.Size = new Size(300, 80);
-            pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox.BackColor = Color.FromArgb(50, 50, 50);
-            this.Controls.Add(pictureBox);
+            lblInfo = new Label
+            {
+                Text = "Введіть xmin, xmax, dx та a. Для кожного x випадково обирається формула за q.",
+                Location = new Point(20, 15),
+                Size = new Size(720, 35),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+            Controls.Add(lblInfo);
 
-            // Етикета та TextBox для початкового значення (a)
-            lblA = new Label();
-            lblA.Text = "Початкове значення (a):";
-            lblA.Location = new Point(30, 110);
-            lblA.Size = new Size(200, 20);
-            lblA.ForeColor = Color.White;
-            lblA.Font = new Font("Arial", 10, FontStyle.Bold);
-            this.Controls.Add(lblA);
+            lblXmin = new Label { Text = "xmin:", Location = new Point(20, 70), Size = new Size(80, 24) };
+            txtXmin = new TextBox { Location = new Point(110, 68), Size = new Size(120, 24), Text = "0" };
 
-            txtA = new TextBox();
-            txtA.Location = new Point(240, 110);
-            txtA.Size = new Size(300, 25);
-            txtA.Text = "0";
-            txtA.Font = new Font("Arial", 10);
-            this.Controls.Add(txtA);
+            lblXmax = new Label { Text = "xmax:", Location = new Point(260, 70), Size = new Size(80, 24) };
+            txtXmax = new TextBox { Location = new Point(350, 68), Size = new Size(120, 24), Text = "10" };
 
-            // Етикета та TextBox для кінцевого значення (b)
-            lblB = new Label();
-            lblB.Text = "Кінцеве значення (b):";
-            lblB.Location = new Point(30, 150);
-            lblB.Size = new Size(200, 20);
-            lblB.ForeColor = Color.White;
-            lblB.Font = new Font("Arial", 10, FontStyle.Bold);
-            this.Controls.Add(lblB);
+            lblDx = new Label { Text = "dx:", Location = new Point(20, 110), Size = new Size(80, 24) };
+            txtDx = new TextBox { Location = new Point(110, 108), Size = new Size(120, 24), Text = "1" };
 
-            txtB = new TextBox();
-            txtB.Location = new Point(240, 150);
-            txtB.Size = new Size(300, 25);
-            txtB.Text = "3.14159";
-            txtB.Font = new Font("Arial", 10);
-            this.Controls.Add(txtB);
+            lblA = new Label { Text = "a:", Location = new Point(260, 110), Size = new Size(80, 24) };
+            txtA = new TextBox { Location = new Point(350, 108), Size = new Size(120, 24), Text = "1" };
 
-            // Етикета та TextBox для кроку (c)
-            lblC = new Label();
-            lblC.Text = "Крок (c):";
-            lblC.Location = new Point(30, 190);
-            lblC.Size = new Size(200, 20);
-            lblC.ForeColor = Color.White;
-            lblC.Font = new Font("Arial", 10, FontStyle.Bold);
-            this.Controls.Add(lblC);
+            btnRun = new Button
+            {
+                Text = "Обчислити",
+                Location = new Point(20, 155),
+                Size = new Size(180, 35),
+                BackColor = Color.FromArgb(30, 215, 96),
+                ForeColor = Color.White
+            };
+            btnRun.Click += BtnRun_Click;
 
-            txtC = new TextBox();
-            txtC.Location = new Point(240, 190);
-            txtC.Size = new Size(300, 25);
-            txtC.Text = "0.5";
-            txtC.Font = new Font("Arial", 10);
-            this.Controls.Add(txtC);
+            btnFormulas = new Button
+            {
+                Text = "Показати формули",
+                Location = new Point(220, 155),
+                Size = new Size(180, 35),
+                BackColor = Color.FromArgb(80, 80, 80),
+                ForeColor = Color.White
+            };
+            btnFormulas.Click += (s, e) => new FormFormulas().Show();
 
-            // ComboBox для вибору функції
-            Label lblFuncion = new Label();
-            lblFuncion.Text = "Виберіть функцію:";
-            lblFuncion.Location = new Point(30, 230);
-            lblFuncion.Size = new Size(200, 20);
-            lblFuncion.ForeColor = Color.White;
-            lblFuncion.Font = new Font("Arial", 10, FontStyle.Bold);
-            this.Controls.Add(lblFuncion);
+            picStudent = new PictureBox
+            {
+                Location = new Point(520, 60),
+                Size = new Size(200, 170),
+                BorderStyle = BorderStyle.FixedSingle,
+                SizeMode = PictureBoxSizeMode.Zoom
+            };
 
-            comboBoxFuncion = new ComboBox();
-            comboBoxFuncion.Location = new Point(240, 230);
-            comboBoxFuncion.Size = new Size(300, 25);
-            comboBoxFuncion.Items.AddRange(new[] { "w = tg(x)", "w = sin(x)", "w = cos(x)", "w = e^x" });
-            comboBoxFuncion.SelectedIndex = 0;
-            comboBoxFuncion.Font = new Font("Arial", 10);
-            this.Controls.Add(comboBoxFuncion);
+            lblStudent = new Label
+            {
+                Text = "Прізвище Ім'я\nГрупа",
+                Location = new Point(520, 235),
+                Size = new Size(200, 45),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
 
-            // Кнопка для обчислення
-            btnCalcular = new Button();
-            btnCalcular.Text = "Обчислити";
-            btnCalcular.Location = new Point(240, 270);
-            btnCalcular.Size = new Size(300, 35);
-            btnCalcular.BackColor = Color.FromArgb(30, 215, 96);
-            btnCalcular.ForeColor = Color.White;
-            btnCalcular.Font = new Font("Arial", 11, FontStyle.Bold);
-            btnCalcular.Click += BtnCalcular_Click;
-            this.Controls.Add(btnCalcular);
-
-            // ListBox для результатів
-            Label lblResultados = new Label();
-            lblResultados.Text = "Результати:";
-            lblResultados.Location = new Point(30, 320);
-            lblResultados.Size = new Size(200, 20);
-            lblResultados.ForeColor = Color.White;
-            lblResultados.Font = new Font("Arial", 10, FontStyle.Bold);
-            this.Controls.Add(lblResultados);
-
-            listBox = new ListBox();
-            listBox.Location = new Point(30, 345);
-            listBox.Size = new Size(510, 300);
-            listBox.BackColor = Color.FromArgb(40, 40, 40);
-            listBox.ForeColor = Color.FromArgb(0, 200, 100);
-            listBox.Font = new Font("Courier New", 9);
-            this.Controls.Add(listBox);
-        }
-
-        private void BtnCalcular_Click(object sender, EventArgs e)
-        {
             try
             {
-                double a = double.Parse(txtA.Text);
-                double b = double.Parse(txtB.Text);
-                double c = double.Parse(txtC.Text);
-                string funcion = comboBoxFuncion.SelectedItem?.ToString() ?? "w = tg(x)";
-
-                listBox.Items.Clear();
-                listBox.Items.Add($"=== Обчислення функції: {funcion} ===");
-                listBox.Items.Add($"Від {a} до {b} з кроком {c}");
-                listBox.Items.Add("---");
-
-                // Циклічне обчислення функції та додавання результатів до ListBox
-                // За аналогією з прикладом з інструкції
-                for (double x = a; x <= b; x += c)
+                string path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "imagenes", "student.jpg");
+                if (System.IO.File.Exists(path))
                 {
-                    double w = 0;
-                    string resultado = "";
-
-                    switch (funcion)
-                    {
-                        case "w = tg(x)":
-                            w = Math.Tan(x);
-                            resultado = $"x = {x:F4}  =>  w = {w:F6}";
-                            break;
-                        case "w = sin(x)":
-                            w = Math.Sin(x);
-                            resultado = $"x = {x:F4}  =>  w = {w:F6}";
-                            break;
-                        case "w = cos(x)":
-                            w = Math.Cos(x);
-                            resultado = $"x = {x:F4}  =>  w = {w:F6}";
-                            break;
-                        case "w = e^x":
-                            w = Math.Exp(x);
-                            resultado = $"x = {x:F4}  =>  w = {w:F6}";
-                            break;
-                    }
-
-                    listBox.Items.Add(resultado);
+                    picStudent.Image = Image.FromFile(path);
                 }
+            }
+            catch
+            {
+            }
 
-                MessageBox.Show("Обчислення завершено! Результати показані у списку.", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (FormatException)
+            Controls.AddRange(new Control[]
             {
-                MessageBox.Show("Помилка: Введіть коректні числові значення!", "Помилка вводу", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                listBox.Items.Clear();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Помилка: {ex.Message}", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                listBox.Items.Clear();
-            }
+                lblInfo, lblXmin, txtXmin, lblXmax, txtXmax, lblDx, txtDx, lblA, txtA,
+                btnRun, btnFormulas, picStudent, lblStudent
+            });
         }
 
-        private void InitializeComponent()
+        private void BtnRun_Click(object sender, EventArgs e)
         {
-            this.SuspendLayout();
-            this.ResumeLayout(false);
+            if (!double.TryParse(txtXmin.Text, out double xmin) ||
+                !double.TryParse(txtXmax.Text, out double xmax) ||
+                !double.TryParse(txtDx.Text, out double dx) ||
+                !double.TryParse(txtA.Text, out double a))
+            {
+                MessageBox.Show("Введіть коректні числові значення.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (dx <= 0 || xmin > xmax)
+            {
+                MessageBox.Show("Перевірте, що dx > 0 і xmin <= xmax.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var rnd = new Random();
+            var resultsF1 = new List<string>();
+            var resultsF2 = new List<string>();
+            var errors = new List<string>();
+            int countF1 = 0;
+            int countF2 = 0;
+
+            for (double x = xmin; x <= xmax + 1e-9; x += dx)
+            {
+                double q = rnd.NextDouble();
+                if (q > 0 && q <= 0.25)
+                {
+                    try
+                    {
+                        double numeratorArg = q * Math.Sin(a - x);
+                        if (numeratorArg <= 0)
+                            throw new InvalidOperationException($"log не визначений, бо q*sin(a-x)={numeratorArg:F6}");
+
+                        if (Math.Abs(q + x) < 1e-12)
+                            throw new DivideByZeroException("Ділення на нуль у знаменнику q + x");
+
+                        double y = Math.Log(numeratorArg) / (q + x);
+                        resultsF1.Add($"x={x:F4}, q={q:F6} => y={y:F6}");
+                        countF1++;
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add($"x={x:F4}, q={q:F6}: f1 — {ex.Message}");
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        double baseValue = q - a * x;
+                        if (baseValue < 0)
+                            throw new InvalidOperationException($"Підкореневий вираз < 0: {baseValue:F6}");
+
+                        double y = Math.Pow(baseValue, 0.25);
+                        resultsF2.Add($"x={x:F4}, q={q:F6} => y={y:F6}");
+                        countF2++;
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add($"x={x:F4}, q={q:F6}: f2 — {ex.Message}");
+                    }
+                }
+            }
+
+            new FormResults("Результати f1(x)", resultsF1, countF1).Show();
+            new FormResults("Результати f2(x)", resultsF2, countF2).Show();
+
+            if (errors.Any())
+            {
+                MessageBox.Show(string.Join(Environment.NewLine, errors.Take(20)), "Помилки обчислення", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }
