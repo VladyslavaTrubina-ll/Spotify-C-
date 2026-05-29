@@ -129,7 +129,7 @@ namespace Spotify.WinForms.Views
                 return;
             }
 
-            if (_controlador.IniciarSesion(usuario, contrasena))
+            if (_controlador.SqlLogin(usuario, contrasena))
             {
                 MessageBox.Show($"Ласкаво просимо, {usuario}!", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
@@ -163,7 +163,7 @@ namespace Spotify.WinForms.Views
                 return;
             }
 
-            bool registrado = _controlador.RegistrarCliente(usuario, usuario, contrasena, 1);
+            bool registrado = _controlador.RegistrarCliente(usuario, contrasena);
             if (registrado)
             {
                 MessageBox.Show("Реєстрація успішна. Тепер можна увійти.", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);

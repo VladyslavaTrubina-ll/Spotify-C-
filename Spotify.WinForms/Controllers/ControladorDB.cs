@@ -1,15 +1,8 @@
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using Spotify.WinForms.Models;
 
 namespace Spotify.WinForms.Controllers
 {
-    /// <summary>
-    /// Контролер БД (DAO) для операцій JDBC з базою даних `spoty`.
-    /// Забезпечує методи для автентифікації, управління клієнтами, 
-    /// художниками, плейлистами та операціями, пов'язаними з аудіо.
-    /// </summary>
     public class ControladorDB
     {
         private MySqlConnection _conexion;
@@ -29,9 +22,6 @@ namespace Spotify.WinForms.Controllers
         {
         }
 
-        /// <summary>
-        /// Запускає JDBC з'єднання з налаштованою БД.
-        /// </summary>
         public bool StartConnection()
         {
             bool conexionEstablecida = false;
@@ -50,9 +40,6 @@ namespace Spotify.WinForms.Controllers
             return conexionEstablecida;
         }
 
-        /// <summary>
-        /// Закриває з'єднання з БД.
-        /// </summary>
         public void CloseConnection()
         {
             try
@@ -78,7 +65,7 @@ namespace Spotify.WinForms.Controllers
         }
 
         /// <summary>
-        /// Спроба входу з делегуванням на `SqlLogin`.
+        /// Пробує увійти в систему, перевіряючи облікові дані користувача через SQL-запит.
         /// </summary>
         public bool IniciarSesion(string alias, string contrasenaUsuario)
         {
@@ -121,29 +108,21 @@ namespace Spotify.WinForms.Controllers
             return false;
         }
 
-        /// <summary>
-        /// Реєструє нового клієнта в таблиці `cliente`.
-        /// </summary>
-        public bool RegistrarCliente(string nombre, string usuario, string contrasena, int idIdioma = 1)
+        public bool RegistrarCliente(string usuario, string contrasena)
         {
             if (!HayConexion())
             {
                 return false;
             }
 
-            const string sql = @"
-INSERT INTO cliente (nombre, apellidos, usuario, contrasena, fechaNacimiento, tipo, idIdioma)
-VALUES (@nombre, @apellidos, @usuario, @contrasena, NULL, 'Free', @idIdioma)";
+            const string sql = "INSERT INTO cliente (usuario, contrasena, tipo) VALUES (@usuario, @contrasena, 'Free')";
 
             try
             {
                 using (MySqlCommand cmd = new MySqlCommand(sql, _conexion))
                 {
-                    cmd.Parameters.AddWithValue("@nombre", nombre);
-                    cmd.Parameters.AddWithValue("@apellidos", string.Empty);
                     cmd.Parameters.AddWithValue("@usuario", usuario);
                     cmd.Parameters.AddWithValue("@contrasena", contrasena);
-                    cmd.Parameters.AddWithValue("@idIdioma", idIdioma);
 
                     int affectedRows = cmd.ExecuteNonQuery();
                     if (affectedRows > 0)
@@ -175,107 +154,6 @@ VALUES (@nombre, @apellidos, @usuario, @contrasena, NULL, 'Free', @idIdioma)";
         public void SetIdClienteActual(int id)
         {
             _idClienteActual = id;
-        }
-
-        /// <summary>
-        /// Отримує інформацію про клієнта за ID.
-        /// </summary>
-        public Cliente ObtenerCliente(int idCliente)
-        {
-            if (!HayConexion())
-            {
-                return null;
-            }
-
-            string sql = "SELECT * FROM cliente WHERE idCliente = @id";
-            try
-            {
-                using (MySqlCommand cmd = new MySqlCommand(sql, _conexion))
-                {
-                    cmd.Parameters.AddWithValue("@id", idCliente);
-
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            int idClienteOrdinal = reader.GetOrdinal("idCliente");
-                            int nombreOrdinal = reader.GetOrdinal("nombre");
-                            int apellidosOrdinal = reader.GetOrdinal("apellidos");
-                            int usuarioOrdinal = reader.GetOrdinal("usuario");
-                            int contrasenaOrdinal = reader.GetOrdinal("contrasena");
-                            int fechaNacimientoOrdinal = reader.GetOrdinal("fechaNacimiento");
-                            int fechaRegistroOrdinal = reader.GetOrdinal("fechaRegistro");
-                            int tipoOrdinal = reader.GetOrdinal("tipo");
-
-                            Cliente cliente = new Cliente
-                            {
-                                Id = reader.GetInt32(idClienteOrdinal),
-                                Nome = reader.GetString(nombreOrdinal),
-                                Apellido = reader.IsDBNull(apellidosOrdinal) ? "" : reader.GetString(apellidosOrdinal),
-                                Usuario = reader.GetString(usuarioOrdinal),
-                                Contrasena = reader.GetString(contrasenaOrdinal),
-                                FecNac = reader.IsDBNull(fechaNacimientoOrdinal) ? "" : reader.GetString(fechaNacimientoOrdinal),
-                                FecReg = reader.IsDBNull(fechaRegistroOrdinal) ? "" : reader.GetString(fechaRegistroOrdinal),
-                                EsPremium = reader.GetString(tipoOrdinal) == "Premium"
-                            };
-                            return cliente;
-                        }
-                    }
-                }
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine($"Помилка при отриманні клієнта: {e.Message}");
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Отримує всі плейлисти клієнта.
-        /// </summary>
-        public List<Playlist> ObtenerPlaylistsCliente(int idCliente)
-        {
-            List<Playlist> playlists = new List<Playlist>();
-
-            if (!HayConexion())
-            {
-                return playlists;
-            }
-
-            string sql = "SELECT * FROM playlist WHERE idCliente = @idCliente";
-            try
-            {
-                using (MySqlCommand cmd = new MySqlCommand(sql, _conexion))
-                {
-                    cmd.Parameters.AddWithValue("@idCliente", idCliente);
-
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            int idPlaylistOrdinal = reader.GetOrdinal("idPlaylist");
-                            int tituloOrdinal = reader.GetOrdinal("titulo");
-                            int fechaCreacionOrdinal = reader.GetOrdinal("fechaCreacion");
-
-                            Playlist p = new Playlist
-                            {
-                                Id = reader.GetInt32(idPlaylistOrdinal),
-                                Titulo = reader.GetString(tituloOrdinal),
-                                FechaCreacion = reader.GetString(fechaCreacionOrdinal),
-                                IdCliente = idCliente
-                            };
-                            playlists.Add(p);
-                        }
-                    }
-                }
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine($"Помилка при отриманні плейлистів: {e.Message}");
-            }
-
-            return playlists;
         }
     }
 }

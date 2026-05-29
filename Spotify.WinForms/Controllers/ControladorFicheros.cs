@@ -6,19 +6,15 @@ using System.Linq;
 namespace Spotify.WinForms.Controllers
 {
     /// <summary>
-    /// Контролер для роботи з файлами аудіо та зображень.
+    /// Контролер для роботи з файлами аудіо 
     /// </summary>
     public class ControladorFicheros
     {
         private string _rutaMusica;
-        private string _rutaImagenes;
-        private string _rutaPodcasts;
 
-        public ControladorFicheros(string rutaMusica, string rutaImagenes, string rutaPodcasts)
+        public ControladorFicheros(string rutaMusica)
         {
             _rutaMusica = rutaMusica;
-            _rutaImagenes = rutaImagenes;
-            _rutaPodcasts = rutaPodcasts;
         }
 
         /// <summary>
@@ -39,51 +35,6 @@ namespace Spotify.WinForms.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Помилка при зчитуванні музичних файлів: {ex.Message}");
-            }
-            return archivos;
-        }
-
-        /// <summary>
-        /// Отримує список всіх зображень в папці.
-        /// </summary>
-        public List<string> ObtenerArchivoImagenes()
-        {
-            List<string> archivos = new List<string>();
-            try
-            {
-                if (Directory.Exists(_rutaImagenes))
-                {
-                    archivos = Directory.GetFiles(_rutaImagenes, "*.jpg")
-                        .Concat(Directory.GetFiles(_rutaImagenes, "*.png"))
-                        .Concat(Directory.GetFiles(_rutaImagenes, "*.gif"))
-                        .ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Помилка при зчитуванні зображень: {ex.Message}");
-            }
-            return archivos;
-        }
-
-        /// <summary>
-        /// Отримує список всіх подкастів в папці.
-        /// </summary>
-        public List<string> ObtenerArchivoPodcasts()
-        {
-            List<string> archivos = new List<string>();
-            try
-            {
-                if (Directory.Exists(_rutaPodcasts))
-                {
-                    archivos = Directory.GetFiles(_rutaPodcasts, "*.mp3")
-                        .Concat(Directory.GetFiles(_rutaPodcasts, "*.wav"))
-                        .ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Помилка при зчитуванні подкастів: {ex.Message}");
             }
             return archivos;
         }

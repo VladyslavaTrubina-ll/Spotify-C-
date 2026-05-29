@@ -5,10 +5,6 @@ using NAudio.Wave;
 
 namespace Spotify.WinForms.Controllers
 {
-    /// <summary>
-    /// Контролер для відтворення аудіофайлів.
-    /// Використовує WPF MediaElement для воспроизведения.
-    /// </summary>
     [SupportedOSPlatform("windows")]
     public class ReproductorAudio
     {
@@ -73,66 +69,6 @@ namespace Spotify.WinForms.Controllers
             }
         }
 
-        /// <summary>
-        /// Продовжує відтворення.
-        /// </summary>
-        public void Reanudar()
-        {
-            try
-            {
-                if (_estaPausado)
-                {
-                    _mediaPlayer.Play();
-                    _estaPausado = false;
-                    Console.WriteLine("Музика продовжується.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Помилка при відновленні: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Зупиняє відтворення.
-        /// </summary>
-        public void Detener()
-        {
-            try
-            {
-                DetenerYLiberarRecursos();
-                Console.WriteLine("Музика зупинена.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Помилка при зупинці: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Отримує поточний файл.
-        /// </summary>
-        public string ObtenerArchivoActual()
-        {
-            return _archivoActual;
-        }
-
-        /// <summary>
-        /// Перевіряє, чи відтворюється музика.
-        /// </summary>
-        public bool EstaReproduciendo()
-        {
-            return _mediaPlayer.PlaybackState == PlaybackState.Playing;
-        }
-
-        /// <summary>
-        /// Перевіряє, чи музика призупинена.
-        /// </summary>
-        public bool EstaPausada()
-        {
-            return _estaPausado;
-        }
-
         private void DetenerYLiberarRecursos()
         {
             if (_mediaPlayer != null)
@@ -153,3 +89,4 @@ namespace Spotify.WinForms.Controllers
         }
     }
 }
+ 

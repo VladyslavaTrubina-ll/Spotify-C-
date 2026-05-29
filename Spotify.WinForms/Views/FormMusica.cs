@@ -19,19 +19,13 @@ namespace Spotify.WinForms.Views
         private ControladorFicheros _controladorFicheros;
         private ReproductorAudio _reproductor;
         private ListBox listBoxCanciones;
-        private Button btnPlay, btnPause, btnStop;
-        private Label lblActual;
-        private ProgressBar progressBar;
+        private Button btnPlay, btnPause;
 
         public FormMusica(ControladorDB controladorDB)
         {
             InitializeComponent();
             _controladorDB = controladorDB;
-            _controladorFicheros = new ControladorFicheros(
-                "canciones", 
-                "imagenes", 
-                "podcasts"
-            );
+            _controladorFicheros = new ControladorFicheros("canciones");
             _reproductor = new ReproductorAudio();
             
             this.Text = "Spotify - Музика";
@@ -64,21 +58,6 @@ namespace Spotify.WinForms.Views
             listBoxCanciones.DoubleClick += ListBoxCanciones_DoubleClick;
             this.Controls.Add(listBoxCanciones);
 
-            // Мітка поточної пісні
-            lblActual = new Label();
-            lblActual.Text = "Поточна пісня: Немає";
-            lblActual.Location = new Point(20, 380);
-            lblActual.Size = new Size(750, 25);
-            lblActual.Font = new Font("Arial", 10);
-            lblActual.ForeColor = Color.FromArgb(0, 200, 100);
-            this.Controls.Add(lblActual);
-
-            // ProgressBar
-            progressBar = new ProgressBar();
-            progressBar.Location = new Point(20, 415);
-            progressBar.Size = new Size(750, 20);
-            progressBar.Value = 0;
-            this.Controls.Add(progressBar);
 
             // Кнопка Play
             btnPlay = new Button();
@@ -102,16 +81,6 @@ namespace Spotify.WinForms.Views
             btnPause.Click += BtnPause_Click;
             this.Controls.Add(btnPause);
 
-            // Кнопка Stop
-            btnStop = new Button();
-            btnStop.Text = "⏹ Stop";
-            btnStop.Location = new Point(350, 450);
-            btnStop.Size = new Size(100, 40);
-            btnStop.BackColor = Color.FromArgb(200, 50, 50);
-            btnStop.ForeColor = Color.White;
-            btnStop.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnStop.Click += BtnStop_Click;
-            this.Controls.Add(btnStop);
 
             // Кнопка назад
             Button btnBack = new Button();
@@ -138,10 +107,10 @@ namespace Spotify.WinForms.Views
 
             if (canciones.Count == 0)
             {
-                listBoxCanciones.Items.Add("Немає піс, завантажте музику в папку 'canciones'");
+                listBoxCanciones.Items.Add("Немає пісень, завантажте музику в папку 'canciones'");
             }
         }
-
+        // Подвійний клік по пісні в списку — відтворення
         private void ListBoxCanciones_DoubleClick(object sender, EventArgs e)
         {
             if (listBoxCanciones.SelectedIndex >= 0)
@@ -149,15 +118,11 @@ namespace Spotify.WinForms.Views
                 List<string> canciones = _controladorFicheros.ObtenerArchivoMusica();
                 if (listBoxCanciones.SelectedIndex < canciones.Count)
                 {
-                    string cancion = canciones[listBoxCanciones.SelectedIndex];
-                    if (_reproductor.CargarYReproducir(cancion))
-                    {
-                        lblActual.Text = $"Поточна пісня: {System.IO.Path.GetFileNameWithoutExtension(cancion)}";
-                    }
+                    _reproductor.CargarYReproducir(canciones[listBoxCanciones.SelectedIndex]);
                 }
             }
         }
-
+        // Клік по кнопці Play — відтворення вибраної пісні
         private void BtnPlay_Click(object sender, EventArgs e)
         {
             if (listBoxCanciones.SelectedIndex >= 0)
@@ -173,23 +138,18 @@ namespace Spotify.WinForms.Views
                 MessageBox.Show("Виберіть пісню зі списку!", "Інформація", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
-
+        // Клік по кнопці Pause — пауза
         private void BtnPause_Click(object sender, EventArgs e)
         {
             _reproductor.Pausar();
         }
 
-        private void BtnStop_Click(object sender, EventArgs e)
-        {
-            _reproductor.Detener();
-            lblActual.Text = "Поточна пісня: Немає";
-        }
-
+        // Клік по кнопці Назад — закрити форму музики
         private void BtnBack_Click(object sender, EventArgs e)
         {
             this.Close();
         }
-
+        // Ініціалізація компонентів форми (порожня, оскільки всі елементи створюються програмно)
         private void InitializeComponent()
         {
             this.SuspendLayout();
