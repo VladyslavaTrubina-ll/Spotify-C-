@@ -33,7 +33,6 @@ namespace Spotify.WinForms.Controllers
                 {
                     archivos = Directory.GetFiles(_rutaMusica, "*.mp3")
                         .Concat(Directory.GetFiles(_rutaMusica, "*.wav"))
-                        .Concat(Directory.GetFiles(_rutaMusica, "*.flac"))
                         .ToList();
                 }
             }
