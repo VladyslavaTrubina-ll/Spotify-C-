@@ -106,9 +106,7 @@ namespace Spotify.WinForms.Views
 
         private void BtnCerrarSesion_Click(object sender, EventArgs e)
         {
-            this.Close();
-            FormLogin login = new FormLogin();
-            login.Show();
+            Application.Exit();
         }
     }
 }
