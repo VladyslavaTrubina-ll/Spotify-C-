@@ -21,7 +21,6 @@ namespace Spotify.WinForms.Views
         private Button btnLogin;
         private Button btnRegistro;
         private PictureBox pictureBox;
-        private ListBox listBoxMensajes;
 
         public FormLogin()
         {
@@ -111,32 +110,6 @@ namespace Spotify.WinForms.Views
             btnRegistro.Font = new Font("Arial", 10, FontStyle.Bold);
             btnRegistro.Click += BtnRegistro_Click;
             this.Controls.Add(btnRegistro);
-
-            // ListBox для повідомлень (динамічне додавання)
-            listBoxMensajes = new ListBox();
-            listBoxMensajes.Location = new Point(50, 280);
-            listBoxMensajes.Size = new Size(350, 250);
-            listBoxMensajes.BackColor = Color.FromArgb(40, 40, 40);
-            listBoxMensajes.ForeColor = Color.White;
-            listBoxMensajes.Font = new Font("Arial", 9);
-            this.Controls.Add(listBoxMensajes);
-
-            // ComboBox для вибору мови (приклад з інструкції)
-            ComboBox comboBoxLanguage = new ComboBox();
-            comboBoxLanguage.Location = new Point(50, 540);
-            comboBoxLanguage.Size = new Size(350, 30);
-            comboBoxLanguage.Items.AddRange(new[] { "Українська", "English", "Español", "Português" });
-            comboBoxLanguage.SelectedIndex = 0;
-            this.Controls.Add(comboBoxLanguage);
-
-            AddMessageToList("Ласкаво просимо до Spotify!");
-            AddMessageToList("Введіть облікові дані для входу.");
-        }
-
-        private void AddMessageToList(string message)
-        {
-            listBoxMensajes.Items.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
-            listBoxMensajes.TopIndex = listBoxMensajes.Items.Count - 1;
         }
 
         private void BtnLogin_Click(object sender, EventArgs e)
@@ -146,21 +119,18 @@ namespace Spotify.WinForms.Views
 
             if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(contrasena))
             {
-                AddMessageToList("Помилка: Введіть користувача та пароль!");
                 MessageBox.Show("Будь ласка, введіть користувача та пароль.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (!_controlador.StartConnection())
             {
-                AddMessageToList("Помилка: Не можна підключитися до БД!");
                 MessageBox.Show("Помилка підключення до БД.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (_controlador.IniciarSesion(usuario, contrasena))
             {
-                AddMessageToList($"Успіх: Користувач '{usuario}' успішно залоговувався!");
                 MessageBox.Show($"Ласкаво просимо, {usuario}!", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 
                 // Відкрити головне меню
@@ -170,7 +140,6 @@ namespace Spotify.WinForms.Views
             }
             else
             {
-                AddMessageToList($"Помилка: Неправильні облікові дані для '{usuario}'!");
                 MessageBox.Show("Неправильне користувача або пароль.", "Помилка входу", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
@@ -184,14 +153,12 @@ namespace Spotify.WinForms.Views
 
             if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(contrasena))
             {
-                AddMessageToList("Помилка: Для реєстрації введіть користувача та пароль!");
                 MessageBox.Show("Введіть користувача та пароль для реєстрації.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (!_controlador.StartConnection())
             {
-                AddMessageToList("Помилка: Не можна підключитися до БД!");
                 MessageBox.Show("Помилка підключення до БД.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -199,12 +166,10 @@ namespace Spotify.WinForms.Views
             bool registrado = _controlador.RegistrarCliente(usuario, usuario, contrasena, 1);
             if (registrado)
             {
-                AddMessageToList($"Успіх: Користувач '{usuario}' зареєстрований.");
                 MessageBox.Show("Реєстрація успішна. Тепер можна увійти.", "Успіх", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                AddMessageToList($"Помилка: Не вдалося зареєструвати '{usuario}'. Можливо, логін уже існує.");
                 MessageBox.Show("Не вдалося зареєструвати користувача. Перевірте, чи логін вже не зайнятий.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
