@@ -8,10 +8,9 @@ namespace Spotify.WinForms.Views
 {
     public class FormFunctionCalc : Form
     {
-        private Label lblXmin, lblXmax, lblDx, lblA, lblInfo, lblPhoto;
+        private Label lblXmin, lblXmax, lblDx, lblA, lblInfo;
         private TextBox txtXmin, txtXmax, txtDx, txtA;
         private Button btnRun, btnFormulas;
-        private PictureBox picStudent;
 
         public FormFunctionCalc()
         {
@@ -44,19 +43,7 @@ namespace Spotify.WinForms.Views
             btnFormulas = new Button() { Text = "Показати формули", Location = new Point(240, 120), Size = new Size(200, 36) };
             btnFormulas.Click += (s, e) => { new FormFormulas().Show(); };
 
-            // Photo area
-            picStudent = new PictureBox() { Location = new Point(480, 40), Size = new Size(160, 160), BorderStyle = BorderStyle.FixedSingle, SizeMode = PictureBoxSizeMode.Zoom };
-            lblPhoto = new Label() { Text = "Прізвище Ім'я\nГрупа 123", Location = new Point(480, 205), Size = new Size(160, 40), TextAlign = ContentAlignment.MiddleCenter };
-
-            // Try load student photo from imagenes/student.jpg
-            try
-            {
-                var path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "imagenes", "student.jpg");
-                if (System.IO.File.Exists(path)) picStudent.Image = Image.FromFile(path);
-            }
-            catch { }
-
-            this.Controls.AddRange(new Control[] { lblXmin, txtXmin, lblXmax, txtXmax, lblDx, txtDx, lblA, txtA, btnRun, btnFormulas, picStudent, lblPhoto });
+            this.Controls.AddRange(new Control[] { lblXmin, txtXmin, lblXmax, txtXmax, lblDx, txtDx, lblA, txtA, btnRun, btnFormulas });
         }
 
         private void BtnRun_Click(object sender, EventArgs e)
@@ -88,12 +75,11 @@ namespace Spotify.WinForms.Views
 
             for (double x = xmin; x <= xmax + 1e-9; x += dx)
             {
-                double q = rnd.NextDouble(); // 0 <= q < 1
+                double q = rnd.NextDouble();
                 if (q <= 0) q = Double.Epsilon;
 
-                if (q > 0 && q <= 0.25)
+                if (q <= 0.25)
                 {
-                    // f1(x) = log( q * sin(a - x) ) / (q + x)
                     try
                     {
                         double arg = q * Math.Sin(a - x);
@@ -108,9 +94,8 @@ namespace Spotify.WinForms.Views
                         errors.Add($"x={x:F4}, q={q:F6} : f1 помилка -> {ex.Message}");
                     }
                 }
-                else if (q > 0.25 && q <= 1.0)
+                else
                 {
-                    // f2(x) = (q - a*x)^(1/4)
                     try
                     {
                         double baseVal = q - a * x;
@@ -126,16 +111,14 @@ namespace Spotify.WinForms.Views
                 }
             }
 
-            var frm1 = new FormResults("Результати f1(x)", resultsF1, countF1);
-            var frm2 = new FormResults("Результати f2(x)", resultsF2, countF2);
-            frm1.Show();
-            frm2.Show();
+            if (countF1 > 0)
+                new FormResults("Результати f1(x)", resultsF1, countF1).Show();
+            
+            if (countF2 > 0)
+                new FormResults("Результати f2(x)", resultsF2, countF2).Show();
 
-            if (errors.Any())
-            {
-                var msg = string.Join("\n", errors.Take(20));
-                MessageBox.Show("Деякі обчислення не вдалиcь:\n" + msg, "Попередження", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            if (errors.Count > 0)
+                MessageBox.Show(string.Join("\n", errors.Take(20)), "Деякі обчислення не вдалиcь", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

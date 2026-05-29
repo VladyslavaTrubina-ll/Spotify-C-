@@ -20,9 +20,7 @@ namespace Spotify.WinForms.Views
             lblCount = new Label() { Location = new Point(10, 400), Size = new Size(560, 30) };
 
             if (items != null)
-            {
-                foreach (var it in items) listBox.Items.Add(it);
-            }
+                listBox.Items.AddRange(items.ToArray());
 
             lblCount.Text = $"Кількість обчислень: {count}";
 

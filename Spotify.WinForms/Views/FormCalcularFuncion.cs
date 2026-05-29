@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
@@ -24,8 +25,6 @@ namespace Spotify.WinForms.Views
         private TextBox txtA;
         private Button btnRun;
         private Button btnFormulas;
-        private PictureBox picStudent;
-        private Label lblStudent;
 
         public FormCalcularFuncion()
         {
@@ -80,47 +79,21 @@ namespace Spotify.WinForms.Views
             };
             btnFormulas.Click += (s, e) => new FormFormulas().Show();
 
-            picStudent = new PictureBox
-            {
-                Location = new Point(520, 60),
-                Size = new Size(200, 170),
-                BorderStyle = BorderStyle.FixedSingle,
-                SizeMode = PictureBoxSizeMode.Zoom
-            };
-
-            lblStudent = new Label
-            {
-                Text = "Прізвище Ім'я\nГрупа",
-                Location = new Point(520, 235),
-                Size = new Size(200, 45),
-                TextAlign = ContentAlignment.MiddleCenter
-            };
-
-            try
-            {
-                string path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "imagenes", "student.jpg");
-                if (System.IO.File.Exists(path))
-                {
-                    picStudent.Image = Image.FromFile(path);
-                }
-            }
-            catch
-            {
-            }
-
             Controls.AddRange(new Control[]
             {
                 lblInfo, lblXmin, txtXmin, lblXmax, txtXmax, lblDx, txtDx, lblA, txtA,
-                btnRun, btnFormulas, picStudent, lblStudent
+                btnRun, btnFormulas
             });
         }
 
         private void BtnRun_Click(object sender, EventArgs e)
         {
-            if (!double.TryParse(txtXmin.Text, out double xmin) ||
-                !double.TryParse(txtXmax.Text, out double xmax) ||
-                !double.TryParse(txtDx.Text, out double dx) ||
-                !double.TryParse(txtA.Text, out double a))
+            var culture = CultureInfo.CurrentCulture;
+            
+            if (!double.TryParse(txtXmin.Text, NumberStyles.Any, culture, out double xmin) ||
+                !double.TryParse(txtXmax.Text, NumberStyles.Any, culture, out double xmax) ||
+                !double.TryParse(txtDx.Text, NumberStyles.Any, culture, out double dx) ||
+                !double.TryParse(txtA.Text, NumberStyles.Any, culture, out double a))
             {
                 MessageBox.Show("Введіть коректні числові значення.", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -142,7 +115,9 @@ namespace Spotify.WinForms.Views
             for (double x = xmin; x <= xmax + 1e-9; x += dx)
             {
                 double q = rnd.NextDouble();
-                if (q > 0 && q <= 0.25)
+                if (q <= 0) q = double.Epsilon;
+                
+                if (q <= 0.25)
                 {
                     try
                     {
@@ -181,13 +156,14 @@ namespace Spotify.WinForms.Views
                 }
             }
 
-            new FormResults("Результати f1(x)", resultsF1, countF1).Show();
-            new FormResults("Результати f2(x)", resultsF2, countF2).Show();
+            if (countF1 > 0)
+                new FormResults("Результати f1(x)", resultsF1, countF1).Show();
+            
+            if (countF2 > 0)
+                new FormResults("Результати f2(x)", resultsF2, countF2).Show();
 
-            if (errors.Any())
-            {
+            if (errors.Count > 0)
                 MessageBox.Show(string.Join(Environment.NewLine, errors.Take(20)), "Помилки обчислення", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
         }
     }
 }
