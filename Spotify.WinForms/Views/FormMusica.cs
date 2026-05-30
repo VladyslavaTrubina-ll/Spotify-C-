@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.Versioning;
 using Spotify.WinForms.Controllers;
-using Spotify.WinForms.Models;
 
 namespace Spotify.WinForms.Views
 {

@@ -20,7 +20,6 @@ namespace Spotify.WinForms.Views
         private TextBox txtContrasena;
         private Button btnLogin;
         private Button btnRegistro;
-        private PictureBox pictureBox;
 
         public FormLogin()
         {
@@ -42,22 +41,6 @@ namespace Spotify.WinForms.Views
         /// </summary>
         private void CriarElementosProgramaticamente()
         {
-            // Завантажити фотографію
-            try
-            {
-                // Якщо є фото, розташувати його
-                pictureBox = new PictureBox();
-                pictureBox.Location = new Point(150, 10);
-                pictureBox.Size = new Size(200, 100);
-                pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                // pictureBox.Image = Image.FromFile(@"imagenes\spotify-logo.png");
-                this.Controls.Add(pictureBox);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Не можна завантажити зображення: {ex.Message}");
-            }
-
             // Етикета та поле для користувача
             lblUsuario = new Label();
             lblUsuario.Text = "Користувач:";

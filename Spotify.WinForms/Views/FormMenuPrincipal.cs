@@ -84,12 +84,7 @@ namespace Spotify.WinForms.Views
             btnCerrarSesion.Click += BtnCerrarSesion_Click;
             this.Controls.Add(btnCerrarSesion);
 
-            Label lblInfo = new Label();
-            lblInfo.Text = "Проект містить ще форми для логіну, музики та обчислень.";
-            lblInfo.AutoSize = true;
-            lblInfo.ForeColor = Color.Gainsboro;
-            lblInfo.Location = new Point(40, 390);
-            this.Controls.Add(lblInfo);
+
         }
 
         private void BtnMusica_Click(object sender, EventArgs e)
